@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body style="background: black">
+    <input id="url" type="url" name="url" placeholder="Shorten url..."/>
+    <button onclick="createUrl()">Shorten</button>
+    <div style="color: white">
+        <h3>Shortened Url:<span id="shortUrl" target="blank"></span></h3><button onclick="copy()">Copy To Clipboard</button><span id="didCopy"></span>
+    </div>
+    <script>
+        function createUrl() {
+            const url = document.querySelector('#url').value;
+
+            var request = new XMLHttpRequest()
+
+            // Open a new connection, using the GET request on the URL endpoint
+            request.open('POST', '/api/link');
+            request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            request.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 201) {
+                    console.log(this.response);
+                    document.querySelector("#shortUrl").innerHTML = JSON.parse(this.response).shortened_url;
+                    document.querySelector("#shortUrl").href = JSON.parse(this.response).shortened_url;
+                }
+            }
+            var response = request.send(JSON.stringify({ url }));
+        }
+
+        function copy() {
+            /* Get the text field */
+            var copyText = document.getElementById("url");
+
+            /* Select the text field */
+            copyText.select();
+
+            /* Copy the text inside the text field */
+            document.execCommand("copy");
+            document.querySelector('#didCopy').innerHTML = 'Copied url!';
+        }
+    </script>
+</body>
+</html>
